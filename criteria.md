@@ -51,63 +51,54 @@ whether you hit them:
 
 ---
 
-## 1.
+## 1. Overall accuracy, at least 0.70
 
-<!-- Your criterion. It must name a number. -->
+Measured on the held-out test split, in each of the three seeds (all three must pass).
 
-
-
-**Why this target:**
-
-
+**Why this target:** with the label floor in criterion 4, the largest label is at most 45% of
+labels.csv, so always guessing it scores about 0.45 and chance is 0.33. 0.70 clears both by
+a wide margin.
 
 ---
 
-## 2.
+## 2. Macro F1 across the three labels, at least 0.60
 
-<!-- Your criterion. -->
+Measured on the held-out test split, in each of the three seeds (all three must pass).
 
-
-
-**Why this target:**
-
-
+**Why this target:** accuracy alone can reward leaning on the biggest label. Macro F1 weights
+argument, preference and no_claim equally, so a model that ignores one of them fails.
 
 ---
 
-## 3.
+## 3. F1 on the smallest label, at least 0.50
 
-<!-- Your criterion. -->
+The smallest label is the one with the fewest rows in labels.csv. Measured on the held-out
+test split, in each of the three seeds (all three must pass).
 
-
-
-**Why this target:**
-
-
-
----
-
-## 4.
-
-<!-- Your criterion. -->
-
-
-
-**Why this target:**
-
-
+**Why this target:** in my 40-post tally the smallest label (no_claim) was 12.5%. Below 0.50
+the model misses that label more often than it finds it. With about 8 test examples, one
+miss moves recall by about 12 points, so I set this lower than criterion 2.
 
 ---
 
-## 5.
+## 4. Every label has at least 55 rows in labels.csv (of 200)
 
-<!-- Your criterion. -->
+Counted directly from labels.csv.
 
+**Why this target:** with a 70/15/15 split, 55 rows puts about 8 in the test split, the
+minimum the assignment gives for stable per-label metrics. My tally had no_claim at
+12.5% (about 25 of 200), so I will collect about 30 more no_claim posts. One-liners and
+question-only posts are common on this forum, so that's realistic.
 
+---
 
-**Why this target:**
+## 5. Self-agreement on a blind relabel, at least 85% (26 of 30)
 
+30 rows drawn at random from labels.csv with a fixed seed, relabeled at least 24 hours
+later with the label column hidden. Agreement is exact match on the label.
 
+**Why this target:** my hardest boundary (argument vs preference, post #3) needed a four-step
+rule. If I can't apply it the same way twice, the model learns my inconsistency, not the labels.
 
 ---
 
