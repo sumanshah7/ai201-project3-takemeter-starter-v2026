@@ -42,47 +42,57 @@
 <!-- Your community, and what your classifier sorts posts into. Three or four
      sentences. -->
 
-
+My community is the Anime Discussion board on Anime Forums
+(https://animeforums.net/forum/8-anime-discussion/), a public forum where people post
+opinions and replies about anime. The classifier reads one post and sorts it into
+`argument`, `preference` or `no_claim`, depending on whether the post backs a claim with a
+specific reason, only states a taste, or makes no claim at all.
 
 ---
 
 ## Label Taxonomy
 
-<!-- Each label: a one-sentence definition and two real examples from your
-     reading. Then your decision rule for the hardest boundary.
+### `argument`
 
-     The decision rule is worth a point on its own and it's the thing most
-     people leave out. Every taxonomy has a hardest boundary. Name yours. -->
-
-### `label_one`
-
-**Definition:**
+**Definition:** makes a claim about an anime or the anime industry and backs it with a specific reason: a named title, a cause, or a comparison between concrete things (titles, studios, eras), not framed as the poster's own taste.
 
 **Example 1:**
->
+> TODO: paste whole post (Thread 1, #7, Clayton)
 
 **Example 2:**
->
+> TODO: paste whole post (Thread 1, #5, Clayton)
 
-### `label_two`
+### `preference`
 
-**Definition:**
+**Definition:** states a taste or judgment framed as the poster's own reaction ("to me", "I like", "my favorite"), or whose reason only restates the claim or generalizes with no example.
 
 **Example 1:**
->
+> TODO: paste whole post (Thread 1, #13, Clayton)
 
 **Example 2:**
->
+> TODO: paste whole post (Thread 1, #6, animechat)
+
+### `no_claim`
+
+**Definition:** makes no claim of its own: bare agreement or restatement, a question only, or off-topic content such as a bare link or "lol".
+
+**Example 1:**
+> TODO: paste whole post (Thread 1, #12, Moxie)
+
+**Example 2:**
+> TODO: paste whole post (Thread 4, opening post, KaiyaSaysHaiya)
 
 ### The hardest boundary
 
-**Which two labels:**
+**Which two labels:** `argument` and `preference`
 
-**The decision rule I used every time:**
-<!-- e.g. "If the post names a specific checkable fact, it's `analysis`, even
-     if the tone is heated." -->
+**The decision rule I used every time:** apply these in order and stop at the first that fits.
+1. If the post has no claim of its own (bare agreement, restatement, a question only, or off-topic content), it is `no_claim`. Agreement that adds its own claim is labelled by that claim. A claim followed by a question is labelled by the claim.
+2. If the judgment is framed as the poster's own reaction or taste ("to me", "for me", "I like", "I love", "I prefer", "I enjoyed", "my favorite"), it is `preference`, even if a title or comparison is present.
+3. If the post gives a specific reason (a named title, a cause, or a comparison between concrete things) about the work or the industry, it is `argument`. Comparing abstract things (characters vs plot, story vs animation) does not count.
+4. Otherwise it is `preference`.
 
-
+The post that sits on this boundary is Thread 1, #3 (emmaroberts): it compares two abstract things and names no title, studio or era, so step 3 does not fire, and it is `preference`.
 
 ---
 
