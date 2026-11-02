@@ -52,35 +52,37 @@ specific reason, only states a taste, or makes no claim at all.
 
 ## Label Taxonomy
 
+The example posts below are whole posts from `labels.csv`, picked as clear cases of each label.
+
 ### `argument`
 
 **Definition:** makes a claim about an anime or the anime industry and backs it with a specific reason: a named title, a cause, or a comparison between concrete things (titles, studios, eras), not framed as the poster's own taste.
 
 **Example 1:**
-> TODO: paste whole post (Thread 1, #7, Clayton)
+> Another series that has come to my mind is Ranma 1/2. It was fun at first, but as the series progressed it just became a one-trick-pony and the stories just become boring and repetitive.
 
 **Example 2:**
-> TODO: paste whole post (Thread 1, #5, Clayton)
+> Though it’s kind of disingenuous calling Ren a psycho when season 1 alone of Re:Zero gave us Elsa & Petelgeuse. And it pales in comparison to the freakshow of characters in season 3.
 
 ### `preference`
 
 **Definition:** states a taste or judgment framed as the poster's own reaction ("to me", "I like", "my favorite"), or whose reason only restates the claim or generalizes with no example.
 
 **Example 1:**
-> TODO: paste whole post (Thread 1, #13, Clayton)
+> Yeah sometimes filler episodes make me drop an anime. Also when MC stop growing or the story relies too much, it loses me. I love to watch good buildup and emotion anime.
 
 **Example 2:**
-> TODO: paste whole post (Thread 1, #6, animechat)
+> I like all my favorites for different reasons, so it's hard to pick only one, but I will go with Mahotsukai no Home. I love the character's dynamics and their development. Also, I really like the fantasy world it has since I am a big fan of mythology and folklore.
 
 ### `no_claim`
 
 **Definition:** makes no claim of its own: bare agreement or restatement, a question only, or off-topic content such as a bare link or "lol".
 
 **Example 1:**
-> TODO: paste whole post (Thread 1, #12, Moxie)
+> ohhh i have a few! the first ones that come to mind are Chika Takami from love live sunshine Yui Hirasawa and Tsumugi Kotobuki from k-on and all of the sailor senshis tbh
 
 **Example 2:**
-> TODO: paste whole post (Thread 4, opening post, KaiyaSaysHaiya)
+> Not a complete list by any measure but for titles that have extremely sad themes (or at least moments) I'll add .... Grave of the Fireflies Anohana Tokyo Magnitude 8.0 Wolf’s Rain Erased Angel Beats! Plastic Memories Made in Abyss Gakkou gurashi! Tasogare Otome x Amnesia
 
 ### The hardest boundary
 
