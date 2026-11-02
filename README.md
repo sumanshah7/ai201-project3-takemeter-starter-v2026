@@ -183,6 +183,8 @@ posts are far more common than `argument`.
 - *What came back:* Claude ran them. It noticed from the confusion matrix and the flat training loss that the unit 5 model had collapsed to one label, so the three seeds were identical, and it chose to raise the epoch count as the single improvement.
 - *What I changed:* nothing by hand. The numbers and verdicts in this unit's sections were produced and written by Claude from the result files. I have not done the agreement check.
 
+The 30 staff-set labels in my_staff_labels.csv were produced by Claude (in a separate chat), the same tool that pre-labeled my 200 training posts, so the agreement rate measures the training labeler against staff.
+
 **Pre-labelling disclosure:** all 200 rows in `labels.csv` were pre-labelled by Claude and **none were reviewed or corrected by me**. There are no cold-labelled rows. An AI summary of the forum threads also helped me draft the first list of candidate distinctions, and that summary only saw excerpts of most threads.
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
@@ -272,7 +274,7 @@ Verdicts are against the unit 5 targets in `criteria.md`, which hold only if eve
 
 **Is that my labels or the model?** I cannot say yet, because I do not have an agreement report. Two pieces of evidence point both ways: the zero-shot baseline also scored `no_claim` at F1 0.000 even with my definitions, which suggests the label is hard to read off the text, not just hard to learn; but the 200 labels were pre-labelled and never reviewed by me, so inconsistency in the training labels is a live explanation I cannot rule out.
 
-**Criterion 5:** not tested. Nothing to diagnose.
+**Criterion 5:** NOT RUN: needs a blind relabel 24 hours after the first pass, which didn't fit before submission.
 
 ---
 
