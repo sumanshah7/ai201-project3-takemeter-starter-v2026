@@ -155,7 +155,7 @@ posts are far more common than `argument`.
 
 **Settings:** 3 epochs, learning rate 2e-5, batch size 16, 128 tokens per post, seed 42.
 
-**Anything I changed from the defaults, and why:** nothing. All settings are the notebook defaults.
+**Anything I changed from the defaults, and why:** nothing. All settings are the notebook defaults. (Unit 6 later changed `EPOCHS` from 3 to 10 as its one improvement; the settings above are the unit 5 run.)
 
 **Split sizes:** train 139 / val 31 / test 30. Test split per label: `argument` 9, `preference` 12, `no_claim` 9. No label is under 8 in test, but with 9 examples one miss still moves a label's recall by about 11 points.
 
@@ -177,6 +177,12 @@ posts are far more common than `argument`.
 - *What came back:* a collection script (`collect_posts.py`) and labels for about 780 posts, from which 200 were selected. My first collection was 83% one thread, so the script was changed to cap posts per thread.
 - *What I changed:* I did not correct the labels row by row. After the run, two flagged rows that broke my own abstract-comparison rule were relabelled. The rest are as Claude labelled them.
 
+**Moment 3 (unit 6)**
+
+- *What I asked for:* the baseline run, three-seed retraining and confusion matrix, and a verdict on each criterion.
+- *What came back:* Claude ran them. It noticed from the confusion matrix and the flat training loss that the unit 5 model had collapsed to one label, so the three seeds were identical, and it chose to raise the epoch count as the single improvement.
+- *What I changed:* nothing by hand. The numbers and verdicts in this unit's sections were produced and written by Claude from the result files. I have not done the agreement check.
+
 **Pre-labelling disclosure:** all 200 rows in `labels.csv` were pre-labelled by Claude and **none were reviewed or corrected by me**. There are no cold-labelled rows. An AI summary of the forum threads also helped me draft the first list of candidate distinctions, and that summary only saw excerpts of most threads.
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
@@ -188,90 +194,91 @@ posts are far more common than `argument`.
 
 ## Baseline vs. Trained
 
-<!-- Both models on the same posts. `python baseline.py --trained results.json`
-     prints this table for you. -->
+Baseline: `facebook/bart-large-mnli`, zero-shot, using the definitions in `label_definitions.txt`, scored on the same 30 posts as `test_split.csv`.
+
+**Unit 5 model (3 epochs), seed 42, same 30 posts:**
 
 | Measure | Baseline | Trained | Difference |
 |---|---|---|---|
-| Overall accuracy |  |  |  |
-| Macro F1 |  |  |  |
-| F1 — `label_one` |  |  |  |
-| F1 — `label_two` |  |  |  |
+| Overall accuracy | 0.433 | 0.400 | -0.033 |
+| Macro F1 | 0.339 | 0.190 | -0.148 |
+| F1 — `argument` | 0.500 | 0.000 | -0.500 |
+| F1 — `no_claim` | 0.000 | 0.000 | +0.000 |
+| F1 — `preference` | 0.516 | 0.571 | +0.055 |
 
-**What I predicted before I looked:**
-<!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
-     prediction made afterwards isn't one. -->
+**Improved model (10 epochs, see The Improvement), seed 42, same 30 posts** (seed 42 is the split `test_split.csv` came from; seeds 7 and 2024 use different test posts, so only seed 42 is comparable to the baseline):
 
-**What the gap actually means:**
-<!-- If the baseline matched your trained model, your fine-tuning added
-     nothing — and that is a real finding, not a failure. Say it plainly. -->
+| Measure | Baseline | Trained | Difference |
+|---|---|---|---|
+| Overall accuracy | 0.433 | 0.633 | +0.200 |
+| Macro F1 | 0.339 | 0.633 | +0.294 |
+| F1 — `argument` | 0.500 | 0.706 | +0.206 |
+| F1 — `no_claim` | 0.000 | 0.571 | +0.571 |
+| F1 — `preference` | 0.516 | 0.621 | +0.105 |
 
+**Bare label names instead of my definitions:** accuracy 0.433, macro F1 0.261 (`argument` 0.182, `no_claim` 0.000, `preference` 0.600). So my definitions were worth 0.000 accuracy and +0.078 macro F1 to the baseline. The headline baseline above uses the definitions.
 
+**What I predicted before I looked:** I did not write a prediction before seeing numbers. I had already seen the unit 5 results (accuracy 0.400) when the baseline was run, so any prediction would have been after the fact.
+
+**What the gap actually means:** the unit 5 model did *not* beat a model that was never trained on my data: it scored 0.400 vs 0.433. That model had collapsed into predicting `preference` for every post (see the confusion matrix below), so its fine-tuning added nothing. After the 10-epoch fix the trained model beats the baseline on seed 42 on every measure, most of all on `no_claim`, which the baseline never found (F1 0.000). That is one seed on 30 posts, and the other two seeds are much less stable (see The Improvement), so I would not call the gap settled.
 
 ---
 
 ## Run Log — Before
 
-<!-- Five criteria across three seeds. The notebook's section 6 prints the
-     spread table; the Target and Verdict columns are yours. -->
+Unit 5 settings (3 epochs, lr 2e-5, batch 16, 128 tokens). Device: mps (Apple Silicon GPU), torch 2.14.1. Source: `results_three_seeds_before.json`.
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.70 | 0.400 | 0.400 | 0.400 | MISSED |
+| 2. Macro F1 | ≥ 0.60 | 0.190 | 0.190 | 0.190 | MISSED |
+| 3. F1 on smallest label (`argument`, 58 rows) | ≥ 0.50 | 0.000 | 0.000 | 0.000 | MISSED |
+| 4. Every label ≥ 55 rows | ≥ 55 each | 58 / 60 / 82 | 58 / 60 / 82 | 58 / 60 / 82 | MET |
+| 5. Self-agreement on blind relabel | ≥ 85% (26 of 30) | not measured | not measured | not measured | NOT RUN |
+
+All three seeds are identical because the model predicted `preference` for every post, and each seed's test split holds 12 `preference` posts out of 30 (12/30 = 0.400). The notebook's "accuracy moved 0.000, stable enough to trust" is not a sign of stability here; it is a sign the model learned nothing.
 
 ### Confusion matrix
 
-<!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
-     An image of a matrix earns nothing. -->
+Seed 42, unit 5 settings:
 
-| true \ predicted |  |  |  |
+| true \ predicted | argument | preference | no_claim |
 |---|---|---|---|
-| **** |  |  |  |
-| **** |  |  |  |
-| **** |  |  |  |
+| **argument** | 0 | 9 | 0 |
+| **preference** | 0 | 12 | 0 |
+| **no_claim** | 0 | 9 | 0 |
 
-**My biggest off-diagonal number, and what it means:**
-<!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
-     direction. "7 real analysis posts were called hot_take and only 3 went the
-     other way" is a direction, not just an error rate. -->
-
-
+**My biggest off-diagonal number, and what it means:** 9 real `argument` posts and 9 real `no_claim` posts were all called `preference`, and 0 went the other way. The model did not learn any boundary; it learned to always say the biggest label.
 
 ---
 
 ## Verdicts and Diagnoses
 
-<!-- MET or MISSED against LAST UNIT's target. The target has to hold across
-     all three seeds, not turn up sometimes. -->
+Verdicts are against the unit 5 targets in `criteria.md`, which hold only if every one of the three seeds meets them. First row of numbers is the unit 5 run; the "after" run is in The Improvement.
 
-| # | Criterion | Target | Verdict | How I decided |
-|---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| # | Criterion | Target | Verdict (before) | Verdict (after, 10 epochs) | How I decided |
+|---|---|---|---|---|---|
+| 1 | Overall accuracy | ≥ 0.70 | MISSED | MISSED | before: 0.400 on all seeds. after: 0.633, 0.433, 0.700. Seed 2024 reaches exactly 0.700, but the other two seeds do not. |
+| 2 | Macro F1 | ≥ 0.60 | MISSED | MISSED | before: 0.190 on all seeds. after: 0.633, 0.404, 0.686. Seed 7 is below. |
+| 3 | F1 on smallest label (`argument`) | ≥ 0.50 | MISSED | MISSED | before: 0.000 on all seeds. after: 0.706, 0.429, 0.714. Seed 7 is below. |
+| 4 | Every label ≥ 55 rows | ≥ 55 | MET | MET | counted from `labels.csv`: 58 / 60 / 82. Labels were not changed. |
+| 5 | Self-agreement ≥ 85% | 26 of 30 | NOT RUN | NOT RUN | I did not do the blind relabel, so there is no verdict. |
 
 **Diagnoses**
 
-<!-- For each miss: the cause, and how you know. The four common causes are:
-     too few examples for a label, a boundary you applied inconsistently, a
-     genuinely hard label pair, and a task the model can't reach from this
-     much data.
+**Criteria 1–3, before (identical misses): the model collapsed.** It predicted `preference` for all 30 test posts in all three seeds, so accuracy equals the `preference` share (0.400) and both other labels score F1 0.000. How I know: the confusion matrix has only one non-empty column; the three seeds give identical numbers; and the training loss sat at about 1.07 to 1.10 where chance for three labels is ln 3 = 1.099, with validation loss still about 1.06 after 3 epochs. With 139 training posts and batch 16, 3 epochs is only 27 optimizer steps. That is a training-setting cause, not a data cause, and the improvement below tests it.
 
-     ⚠️ Use your agreement report as evidence. It is the only instrument you
-     have that can tell a LABELLING problem from a MODEL problem, and this
-     section is graded on whether you used it that way. -->
+**Criteria 1–3, after: unstable across seeds, with `no_claim` the weakest label.** Accuracy ranges from 0.433 to 0.700, a spread of 0.267, well above the 10-point mark where a measure is unstable. The test split is only 30 posts (9 each for `argument` and `no_claim`), so one post moves accuracy 3.3 points and moves recall on a 9-post label 11 points. Part of that spread is test-set size, not model quality. On top of that, `no_claim` recall is 0.444, 0.222 and 0.444 across seeds, and in all three seeds the largest error is real `no_claim` posts called `preference` (5, 6 and 5 of 9). This is the `no_claim` / `preference` boundary.
 
+**Is that my labels or the model?** I cannot say yet, because I do not have an agreement report. Two pieces of evidence point both ways: the zero-shot baseline also scored `no_claim` at F1 0.000 even with my definitions, which suggests the label is hard to read off the text, not just hard to learn; but the 200 labels were pre-labelled and never reviewed by me, so inconsistency in the training labels is a live explanation I cannot rule out.
 
+**Criterion 5:** not tested. Nothing to diagnose.
 
 ---
 
 ## Agreement Report
+
+**Status: not done.** I have not labelled the 30 staff posts under the staff taxonomy and I do not have `data/staff_labels.csv`, so there is no agreement rate and no adjudication below. This section, and the parts of my diagnosis that depend on it, are open.
 
 <!-- Your rate against the staff set, and every disagreement adjudicated.
 
@@ -327,40 +334,46 @@ posts are far more common than `argument`.
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** `EPOCHS` from 3 to 10. Nothing else: same labels, same taxonomy, same criteria, same `labels.csv`, learning rate 2e-5, batch size 16, 128 tokens. Notebook now has `EPOCHS = 10` and `RUN_LABEL = "after"`.
 
-**Which diagnosis pointed at it:**
+**Which diagnosis pointed at it:** the collapse diagnosis. The unit 5 model predicted one label for everything and its loss stayed at chance after only 27 steps, so the model was under-trained, not mis-labelled.
 
 ### Run Log — After
 
+Source: `results_three_seeds_after.json`. Same device (mps) and torch version (2.14.1).
+
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.70 | 0.633 | 0.433 | 0.700 | MISSED |
+| 2. Macro F1 | ≥ 0.60 | 0.633 | 0.404 | 0.686 | MISSED |
+| 3. F1 on smallest label (`argument`) | ≥ 0.50 | 0.706 | 0.429 | 0.714 | MISSED |
+| 4. Every label ≥ 55 rows | ≥ 55 each | 58 / 60 / 82 | 58 / 60 / 82 | 58 / 60 / 82 | MET |
+| 5. Self-agreement on blind relabel | ≥ 85% | not measured | not measured | not measured | NOT RUN |
 
-**Did it help, and how do I know:**
+Per-label F1 after: `argument` 0.706 / 0.429 / 0.714, `preference` 0.621 / 0.533 / 0.727, `no_claim` 0.571 / 0.250 / 0.615 (seeds 42 / 7 / 2024).
 
-<!-- If it didn't, say so. Relabelling that didn't help is a genuinely
-     interesting result and earns full credit. -->
+Confusion matrix after, seed 42:
 
+| true \ predicted | argument | preference | no_claim |
+|---|---|---|---|
+| **argument** | 6 | 3 | 0 |
+| **preference** | 2 | 9 | 1 |
+| **no_claim** | 0 | 5 | 4 |
 
+Biggest off-diagonal: 5 real `no_claim` posts called `preference`, against 1 going the other way. The model leans toward `preference` on that pair.
+
+**Did it help, and how do I know:** yes, a lot, but not enough to meet the targets. Mean accuracy went from 0.400 to 0.589 and mean macro F1 from 0.190 to 0.574; all three labels now get predicted; validation loss reached about 0.94 instead of 1.06; and on seed 42 the model beats the baseline on every measure. No criterion changed from MISSED to MET. The seeds are far apart (accuracy 0.433 to 0.700), so the improvement is real but the exact numbers are not trustworthy: I only changed the epoch count and did not test other values, so I cannot say 10 is the right number.
 
 ---
 
 ## What's Still Broken
 
-<!-- For each criterion still missed: what you'd do, and why you stopped. -->
+- **Criteria 1, 2 and 3 are still missed.** Seed 7 is the problem in each (accuracy 0.433, macro F1 0.404, `argument` F1 0.429). What I would do: first collect many more labelled posts and use a bigger test split, because 30 test posts cannot give a stable measure; then try more epochs or a higher learning rate and compare across seeds. I stopped because the brief allows one change, and I used it on the collapse.
+- **Criterion 5 (self-agreement) was never measured.** What I would do: relabel 30 random rows with the label column hidden, a day later. I did not do it.
+- **The agreement report is missing.** What I would do: label the 30 staff posts under the staff taxonomy, get `staff_labels.csv`, and adjudicate each disagreement. Until then I cannot tell a labelling problem from a model problem on `no_claim`.
+- **The labels were never reviewed by me.** All 200 rows were pre-labelled and left uncorrected, which could be adding noise.
 
-
-
-**The gap between what I meant my labels to capture and what the model
-learned:**
-<!-- Two sentences. Your confusion matrix is the evidence. -->
-
-
+**The gap between what I meant my labels to capture and what the model learned:** I meant `no_claim` to mean "the post makes no claim at all", but the model calls most `no_claim` posts `preference` (5 to 6 of 9 in every seed after the fix), so what it learned looks closer to "has some stance, however weak". It separates `argument` from `preference` much better than it separates `no_claim` from `preference`, which is the boundary my decision rule spends the least effort on.
 
 <!-- ═════════════════════════════════════════════════════════════════════
 
